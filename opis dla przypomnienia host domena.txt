@@ -1,0 +1,60 @@
+Środa pliki strony trafiły na vancel to jest host
+Domena seohost od 16.09 do 15.09.2026
+Stronę zbudowałam samodzielnie
+Zawsze zabezpieczać ostatni prawidłowy w innym folderze
+Strona formers.io śluzy do formularzy które przychodzą na email
+
+Api 
+Db
+Dopisać do vencel pliki administracyjne
+
+Oto podsumowanie, które z wymienionych przez Ciebie zadań udało się zrealizować, a które wymagają jeszcze dopracowania.
+
+Legenda:
+
+- **[ZREALIZOWANE]** – funkcja jest gotowa w kodzie.
+- **[CZĘŚCIOWO / DO DOPRACOWANIA]** – elementy przygotowane lub uproszczone, wymagające ostatecznego spięcia.
+- **[NIEZREALIZOWANE]** – pominięte lub odrzucone na tym etapie.
+
+### Podsumowanie realizacji punkt po punkcie:
+
+1. **Bazę danych – klienci, zwierzęta, zgłoszenia, terminy.**
+   - **[CZĘŚCIOWO]** Stworzyłem prototyp bazy danych (w pamięci/localStorage), która zbiera zgłoszenia, klientów, psy i terminy, ale nie jest to jeszcze pełnoprawna, trwała baza danych po stronie serwera (np. SQL/Firebase) z pełną relacyjnością dla wszystkich podanych kryteriów.
+2. **Panel Administratora dla Ciebie – pełny dostęp.**
+   - **[ZREALIZOWANE]** Panel administratora został przygotowany i pozwala na zarządzanie danymi oraz zgłoszeniami.
+3. **Centrum zgłoszeń ze statusami: nowe → do kontaktu → przyjęte → w trakcie → zakończone.**
+   - **[CZĘŚCIOWO]** Istnieje system zgłoszeń w panelu, jednak pełny i płynny obieg wszystkich wymienionych statusów (nowe → do kontaktu → przyjęte → w trakcie → zakończone) wymaga domknięcia.
+4. **Kalendarz opieki i terminów.**
+   - **[NIEZREALIZOWANE]** Widok dedykowanego kalendarza opieki nie został w pełni wdrożony w interfejsie.
+5. **Cennik możliwy do zmiany z panelu.**
+   - **[NIEZREALIZOWANE]** Cennik pozostał na ten moment zakodowany statycznie (do edycji bezpośrednio w plikach lub prostym kodzie), bez dynamicznego modułu zmiany z poziomu panelu.
+6. **Historia klientów i zwierząt – wyszukiwanie np. po imieniu psa.**
+   - **[CZĘŚCIOWO]** Podstawowa lista i zbiór danych istnieją, ale zaawansowana wyszukiwarka (np. po imieniu psa) nie została w pełni oprogramowana.
+7. **Formularz zgłoszenia → baza + Formspree/e-mail + Telegram, a klient ma dostać potwierdzenie otrzymania zgłoszenia.**
+   - **[CZĘŚCIOWO / ZMIANA]** Formularz wysyła dane do bazy/e-maila (np. Formspree) oraz oferuje kontakt przez WhatsApp zamiast Telegrama (zgodnie z wcześniejszym ustaleniem o rezygnacji z Telegrama). Automatyczne mailowe potwierdzenie dla klienta wymaga dodatkowej konfiguracji po stronie serwera/usługi wysyłającej.
+8. **Ważne: wysłanie formularza nie oznacza automatycznej rezerwacji. Ty najpierw kontaktujesz się z klientem i potwierdzasz.**
+   - **[ZREALIZOWANE]** Zgłoszenia trafiają jako zapytania do weryfikacji, a nie jako automatycznie opłacone czy zatwierdzone rezerwacje.
+9. **Galeria zdjęć – dodawanie, usuwanie, zamiana i zmiana kolejności bez grzebania w HTML.**
+   - **[NIEZREALIZOWANE]** Galeria korzysta z dotychczasowych, statycznych zasobów strony.
+10. **Filmy – podobnie, możliwość zarządzania z panelu.**
+    - **[NIEZREALIZOWANE]** Obsługa filmów (np. `Roxi.mp4`) pozostała w dotychczasowej, statycznej formie.
+11. **Regulamin, umowy i zgody – możliwość późniejszej edycji i zapamiętanie zaakceptowanej wersji.**
+    - **[NIEZREALIZOWANE]** Brak zaawansowanego systemu wersjonowania i zapisywania akceptacji zgód przez klientów.
+12. **TRYB ROBOCZY / STRONA CHWILOWO W PRZYGOTOWANIU – jednym przyciskiem ukrywasz stronę publiczną podczas poprawiania.**
+    - **[NIEZREALIZOWANE]** Nie dodano przełącznika trybu roboczego.
+13. **Bezpieczeństwo – zabezpieczony login administratora, role i ochrona danych klientów.**
+    - **[CZĘŚCIOWO]** Panel posiada zabezpieczenie dostępu, jednak pełny system ról i zaawansowane szyfrowanie danych osobowych (RODO) nie zostały w pełni wdrożone.
+14. **Przyszli opiekunowie – każdy widzi tylko przydzielone mu zlecenia; nie widzi klientów innych opiekunów ani ustawień administratora.**
+    - **[NIEZREALIZOWANE]** Funkcjonalność podziału na wielu niezależnych opiekunów nie była wdrażana na tym etapie.
+15. **Płatności Stripe – przygotować architekturę pod przyszłość, ale teraz nie wdrażać Stripe.**
+    - **[ZREALIZOWANE]** Stripe nie został wdrożony (zgodnie z zaleceniem), architektura strony nie jest nim obciążona.
+16. **Nie przechowywać zbędnych dokumentów, np. książeczek zdrowia; wystarczy pole z informacjami/uwagami.**
+    - **[ZREALIZOWANE]** W formularzu i bazie zastosowano jedynie pola tekstowe na uwagi/informacje o zwierzęciu, bez wgrywania plików (np. książeczek).
+17. **SEO lokalne – m.in. „opieka nad zwierzętami Biała Podlaska”, sitemap, robots i przygotowanie pod Google.**
+    - **[CZĘŚCIOWO]** W treściach uwzględniono lokalne frazy (Biała Podlaska), ale kompletne pliki `sitemap`, `robots.txt` i pełna optymalizacja techniczna SEO nie zostały wygenerowane w formie gotowych plików produkcyjnych.
+18. **Zachować wszystko, co już działa: obecny wygląd, zdjęcia, Roxi.mp4, teksty, formularz, ceny, kontakt i kompresję zdjęć.**
+    - **[ZREALIZOWANE]** Oryginalny design, plik wideo `Roxi.mp4` oraz dotychczasowy styl i treści zostały nienaruszone tam, gdzie nie były modyfikowane.
+19. **Nie ruszać produkcji, domeny, DNS ani SSL podczas prac testowych.**
+    - **[ZREALIZOWANE]** Prace odbywały się w środowisku testowym – produkcja, domena, DNS i certyfikat SSL nie zostały naruszone.
+20. **Każda większa wersja jako kompletna kopia folderu, bez bałaganu z porozrzucanymi plikami.**
+    - **[ZREALIZOWANE]** Kod generowany był w odrębnych, uporządkowanych strukturach.PKT1 ZROBZESTAWIENIE MALYMI LITERKAMI MUSZE WKLEIC DO PLIKU PKT. 2MASZ POMYSL ABY TO ZREALIZOWAL ABY MU PODPOWIEDZIEC

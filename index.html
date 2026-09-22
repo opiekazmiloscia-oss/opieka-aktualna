@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domowa Opieka nad Zwierzętami – Hotel dla Psów i Kotów Biała Podlaska</title>
+    <meta name="description" content="Domowa opieka nad psami i kotami w Białej Podlaskiej. Spokojne miejsce bez klatek i opieka dobowa.">
+    <meta name="keywords" content="domowa opieka nad zwierzętami, opieka nad psem, hotel dla psów Biała Podlaska">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            background: url('ogrod.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .main-grid { display: flex; gap: 20px; align-items: flex-start; }
+        
+        .left-column { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        .right-column { flex: 1.1; display: flex; flex-direction: column; gap: 15px; }
+        
+        .logo-section { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 5px 0 10px 0; }
+        .real-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 3px solid rgba(255, 255, 255, 0.9); margin-bottom: 8px; }
+        .logo-subtitle { font-family: 'Montserrat', sans-serif; font-size: 13px; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 8px;
+            padding: 10px 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #2b4d36;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .service-card:hover { background: #ffffff; transform: translateX(3px); }
+        .service-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: #f0f4f1; }
+        .service-details h4 { font-size: 12px; color: #1b3b2b; margin-bottom: 1px; text-transform: uppercase; }
+        .service-details p { font-size: 10px; color: #555555; }
+
+        .content-view { display: none; }
+        .content-view.active { display: flex; flex-direction: column; gap: 15px; }
+
+        .card-box {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
+        .card-box h2, .card-box h3 { font-size: 18px; color: #1b3b2b; margin-bottom: 12px; text-transform: uppercase; }
+        .about-image { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
+        .about-text p { font-size: 12px; color: #444444; margin-bottom: 10px; line-height: 1.6; }
+
+        .review-box {
+            background: #f9fafb;
+            border-left: 3px solid #f59e0b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .review-stars { color: #f59e0b; font-size: 14px; margin-bottom: 4px; }
+        .review-text { font-size: 11px; color: #333333; font-style: italic; margin-bottom: 4px; }
+        .review-author { font-size: 10px; color: #666666; font-weight: bold; text-align: right; }
+
+        .media-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .media-tile {
+            background: #f0f4f1;
+            border: 2px dashed #2b4d36;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .media-tile:hover {
+            background: #e2ebd8;
+            transform: scale(1.02);
+        }
+        .media-tile h4 { font-size: 12px; color: #1b3b2b; margin-bottom: 5px; }
+        .media-tile p { font-size: 10px; color: #555; }
+
+        .media-viewer-box {
+            background: #1b3b2b;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        .media-viewer-box.active { display: block; }
+        .media-viewer-box p { font-size: 12px; margin-bottom: 10px; }
+        
+        /* Naprawiona ramka na wideo i zdjęcia z kompresją CSS object-fit */
+        .media-placeholder-frame {
+            width: 100%;
+            height: 240px;
+            background: #000;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .media-placeholder-frame video, 
+        .media-placeholder-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Zapewnia idealną kompresję i proporcje bez rozciągania */
+            background: #000;
+        }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 11px; font-weight: bold; color: #333333; margin-bottom: 3px; text-transform: uppercase; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid #cccccc; border-radius: 6px; font-size: 12px; background: #ffffff; }
+        .form-group textarea { resize: vertical; height: 60px; }
+        
+        .price-calculator-box { background: #f0f4f1; border: 2px dashed #2b4d36; border-radius: 6px; padding: 10px; margin: 12px 0; text-align: center; }
+        .price-calculator-box p { font-size: 12px; color: #444444; font-weight: bold; }
+        .price-calculator-box span { font-size: 16px; color: #1b3b2b; font-weight: bold; }
+
+        .warning-section { background: #fef3c7; border: 1px solid #f59e0b; padding: 12px; border-radius: 6px; margin-top: 10px; }
+        .warning-section h4 { font-size: 12px; color: #b45309; margin-bottom: 4px; text-transform: uppercase; }
+        .warning-desc { font-size: 11px; color: #78350f; margin-bottom: 8px; font-style: italic; }
+        .checkbox-grid { display: grid; grid-template-columns: 1fr; gap: 6px; font-size: 11px; }
+        .checkbox-grid label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; text-transform: none; color: #222222; }
+
+        .btn-submit { background: #2b4d36; color: #ffffff; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; text-transform: uppercase; margin-top: 5px; transition: background 0.2s; }
+        .btn-submit:hover { background: #1f3727; }
+
+        .whatsapp-btn { display: block; text-align: center; background: #25D366; color: white; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; margin-top: 8px; }
+        .whatsapp-btn:hover { background: #1ebe5d; }
+
+        .admin-trigger { text-align: center; margin-top: 15px; }
+        .admin-trigger a { font-size: 11px; color: #ffffff; text-decoration: none; text-shadow: 0 1px 3px rgba(0,0,0,0.8); opacity: 0.8; transition: opacity 0.2s; }
+        .admin-trigger a:hover { opacity: 1; text-decoration: underline; }
+        
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+        .admin-table th, .admin-table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+        .admin-table th { background: #2b4d36; color: white; }
+
+        @media (max-width: 768px) { .main-grid { flex-direction: column; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="main-grid">
+            
+            <div class="left-column">
+                <div class="logo-section">
+                    <img src="1000094949.jpg" alt="Oaza Spokoju Logo" class="real-logo">
+                    <div class="logo-subtitle">Domowa Opieka nad Zwierzętami</div>
+                </div>
+
+                <div class="service-card" onclick="switchView('kalkulator')">
+                    <div class="service-icon">🐾</div>
+                    <div class="service-details">
+                        <h4>Wybierz zwierzaka</h4>
+                        <p>Określ usługę i dane pupila</p>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="switchView('about')">
+                    <div class="service-icon">🏡</div>
+                    <div class="service-details">
+                        <h4>O mnie i warunki</h4>
+                        <p>Dom z ogrodem, doświadczenie</p>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="switchView('podopieczni')">
+                    <div class="service-icon">🐶</div>
+                    <div class="service-details">
+                        <h4>Moi podopieczni</h4>
+                        <p>Filmiki, zdjęcia i opinie</p>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="switchView('umowa')">
+                    <div class="service-icon">📝</div>
+                    <div class="service-details">
+                        <h4>Podgląd Zgłoszenia</h4>
+                        <p>Generowanie podsumowania</p>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="switchView('kontakt')">
+                    <div class="service-icon">📞</div>
+                    <div class="service-details">
+                        <h4>Kontakt i WhatsApp</h4>
+                        <p>Bezpieczny kanał weryfikacji</p>
+                    </div>
+                </div>
+
+                <div class="admin-trigger">
+                    <a href="#" onclick="switchView('admin-login'); return false;">🔒 Panel Administratora</a>
+                </div>
+            </div>
+
+            <div class="right-column">
+                
+                <!-- Widok powitalny / domyślny -->
+                <div id="view-kalkulator" class="content-view active">
+                    <div class="card-box">
+                        <h3>Wybierz zwierzaka i rodzaj opieki</h3>
+                        <form id="bookingForm" action="https://formspree.io/f/mkjgnrbo" method="POST" onsubmit="handleFormSubmit(event)">
+                            
+                            <div class="form-group">
+                                <label>Imię i nazwisko:</label>
+                                <input type="text" name="clientName" id="clientName" placeholder="np. Jan Kowalski" oninput="capitalizeWords(this)" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Twój adres:</label>
+                                <input type="text" name="clientAddress" id="clientAddress" placeholder="np. ul. Kowalskiego 7/20, Biała Podlaska" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Telefon:</label>
+                                <input type="text" name="clientPhone" id="clientPhone" placeholder="np. 000-000-000" required>
+                            </div>
+
+                            <hr style="margin: 12px 0; border: 0; border-top: 1px solid #ddd;">
+
+                            <div class="form-group">
+                                <label>Wybierz usługę / rodzaj opieki:</label>
+                                <select name="service" id="serviceSelect" onchange="calculatePrice()">
+                                    <option value="80">Opieka całodobowa: Pies (0-10 kg) - 80 zł</option>
+                                    <option value="90">Opieka całodobowa: Pies (10-25 kg) - 90 zł</option>
+                                    <option value="100">Opieka całodobowa: Pies (>25 kg) - 100 zł</option>
+                                    <option value="60">Opieka całodobowa: Kot - 60 zł</option>
+                                    <option value="30">Opieka całodobowa: Królik / Gryzoń - 30 zł</option>
+                                    <option value="20">Opieka całodobowa: Ptaki / Gady / Inne - 20 zł</option>
+                                    <option value="60">Opieka dzienna / Świetlica (1 pies, 8-10h) - 60 zł</option>
+                                    <option value="110">Opieka dzienna / Świetlica (2 psy) - 110 zł</option>
+                                    <option value="160">Opieka dzienna / Świetlica (3 psy) - 160 zł</option>
+                                    <option value="30">Spacer indywidualny dla psa (30 min) - 30 zł</option>
+                                    <option value="60">Spacer indywidualny dla psa (60 min) - 60 zł</option>
+                                </select>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Data OD:</label>
+                                    <input type="date" name="dateFrom" id="dateFrom" onchange="calculatePrice()" required>
+                                </div>
+                                <div class="form-group" style="flex: 1;" id="dateToContainer">
+                                    <label>Data DO:</label>
+                                    <input type="date" name="dateTo" id="dateTo" onchange="calculatePrice()" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="distanceBox" style="display:none;">
+                                <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                    <input type="checkbox" name="extraDistance" id="extraDistance" onchange="calculatePrice()"> 🚗 Dojazd poza Białą do 10 km (+60 zł)
+                                </label>
+                            </div>
+
+                            <div class="price-calculator-box">
+                                <p>Wprowadź daty, kiedy potrzebujesz opieki</p>
+                                <span id="totalPriceResult">Wybierz terminy...</span>
+                            </div>
+
+                            <div style="display: flex; gap: 8px;">
+                                <div class="form-group" style="flex: 1.2;">
+                                    <label>Imię zwierzaka:</label>
+                                    <input type="text" name="dogName" id="dogName" placeholder="np. Mruczek / Puszek" oninput="capitalizeFirst(this)" required>
+                                </div>
+                                <div class="form-group" style="flex: 1.3;">
+                                    <label>Gatunek / Rasa:</label>
+                                    <input type="text" name="dogBreed" id="dogBreed" placeholder="np. Kot domowy / Królik" required>
+                                </div>
+                                <div class="form-group" style="flex: 0.8;">
+                                    <label>Wiek:</label>
+                                    <input type="text" name="dogAge" id="dogAge" placeholder="np. 2" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 10px;">
+                                <label>Zdjęcie zwierzaka (opcjonalnie):</label>
+                                <input type="file" name="dogPhotoFile" id="dogPhotoFile" accept="image/*">
+                            </div>
+
+                            <div class="warning-section">
+                                <h4>🚨 Filtr bezpieczeństwa</h4>
+                                <div class="warning-desc">Zaznacz opcje, które dotyczą Twojego pupila:</div>
+                                <div class="checkbox-grid">
+                                    <label><input type="checkbox" name="attrYellow" id="attrYellow" style="accent-color: #d97706;"> 🟡 Żółta wstążka / Skłonności do agresji</label>
+                                    <label><input type="checkbox" name="attrHeat" id="attrHeat" style="accent-color: #dc2626;"> 🔴 Cieczka / Suka w czasie cieczki</label>
+                                    <label><input type="checkbox" name="attrMed" id="attrMed"> 💊 Zwierzę przyjmuje leki</label>
+                                    <label><input type="checkbox" name="attrEscape" id="attrEscape"> 🏃 Skłonności do ucieczek</label>
+                                    <label><input type="checkbox" name="attrHouse" id="attrHouse"> 🏠 Czystość w domu / kuwecie</label>
+                                    <label><input type="checkbox" name="attrSep" id="attrSep"> 🚪 Lęk separacyjny</label>
+                                    <label><input type="checkbox" name="attrSter" id="attrSter"> ✂️ Sterylizacja / Kastracja</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 10px;">
+                                <label>Dodatkowe informacje o zwierzęciu:</label>
+                                <textarea name="petNotes" id="petNotes" placeholder="Co jeszcze warto wiedzieć..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-submit">WYŚLIJ ZAPYTANIE</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="view-about" class="content-view">
+                    <div class="card-box">
+                        <h2>O mnie i warunki</h2>
+                        <img src="1000095739.jpg" alt="O mnie" class="about-image">
+                        <div class="about-text">
+                            <p>Do dobrej opieki nad zwierzęciem potrzeba czegoś więcej – potrzeba <strong>troski, miłości i odpowiedzialności</strong> jako świadomego opiekuna.</p>
+                            <p>Zajmę się Twoim zwierzęciem w moim domu. Jeżeli zechcesz – przyjadę, odbiorę i przywiozę.</p>
+                            <p>Mam dużo cierpliwości, ciepła i spokoju, dlatego kontakt z psami, kotami i małymi zwierzętami (króliki, szczurki, szynszyle) jest dla mnie naturalny.</p>
+                            <p>Każde zwierzę traktuję jak własne — z troską, zaangażowaniem i indywidualnym podejściem. Zwierzęta przebywają w warunkach domowych, ale jeżeli wybierasz klatkę kennelową lub kojec – uprzedź mnie lub przywieź, też się dostosuję. Tak, aby Twój przyjaciel był bezpieczny, a Ty spokojny.</p>
+                            <p>Mieszkam w domu z ogrodem ogrodzonym płotem 190 cm. Zwierzęta mogą wychodzić na smyczy lub — za zgodą właściciela — biegać wolno w ogrodzie.</p>
+                            <p>🐱 <strong>Opieka nad kotami:</strong> Jestem troskliwą opiekunką, bardzo kocham koty. Jeśli właściciel sobie życzy, mogę wyprowadzać kota na smyczy – kotów nie wypuszczam luźno na podwórko z wiadomych względów bezpieczeństwa.</p>
+                            <p>Zawsze dbam o to, aby nie zmieniać rutyny pupila, chyba że właściciel życzy sobie inaczej.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Oddzielna sekcja podopiecznych z filmem i galerią -->
+                <div id="view-podopieczni" class="content-view">
+                    <div class="card-box">
+                        <h2>Moi podopieczni i relacje</h2>
+                        <div class="about-text" style="margin-bottom: 12px;">
+                            <p>Zobacz filmiki i zdjęcia z pobytu naszych gości:</p>
+                        </div>
+
+                        <div class="media-container">
+                            <div class="media-tile" onclick="openMedia('wideo')">
+                                <h4>🎥 Filmik z Roxi</h4>
+                                <p>Kliknij, aby odtworzyć wideo</p>
+                            </div>
+                            <div class="media-tile" onclick="openMedia('kolaż')">
+                                <h4>📸 Galeria</h4>
+                                <p>Kliknij, aby obejrzeć zdjęcia</p>
+                            </div>
+                        </div>
+
+                        <div id="mediaViewer" class="media-viewer-box">
+                            <p id="viewerTitle">Odtwarzacz multimediów</p>
+                            <div class="media-placeholder-frame" id="viewerContent">
+                                [Tu pojawi się wideo lub galeria]
+                            </div>
+                            <button onclick="closeMedia()" style="margin-top: 10px; background: #fff; color: #1b3b2b; border: none; padding: 5px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 10px;">Zamknij podgląd</button>
+                        </div>
+
+                        <div class="about-text" style="margin-top: 20px;">
+                            <p><strong>Opinie naszych zadowolonych gości (oceny 5/5):</strong></p>
+                        </div>
+
+                        <div class="review-box">
+                            <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                            <div class="review-text">„Pani jest stworzona do opieki i tresury psów ❤️ opieka na najwyższym poziomie. Polecam z całego ❤️❤️ Na pewno jeszcze nie raz się zobaczymy mimo że dzieli nas ponad 60 km.”</div>
+                            <div class="review-author">🐾 Opinia klienta</div>
+                        </div>
+
+                        <div class="review-box">
+                            <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                            <div class="review-text">„Nasz kot wręcz rozkwitł pod opieką Pani Ewy! Pełen profesjonalizm, spokój i wspaniałe domowe warunki. Polecam z całego serca!”</div>
+                            <div class="review-author">🐾 Opinia klienta</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-umowa" class="content-view">
+                    <div class="card-box">
+                        <h3>Podsumowanie Zgłoszenia i Kartoteki</h3>
+                        <div class="about-text" id="contractContent">
+                            <p><em>Wypełnij formularz rezerwacji, aby wygenerować podgląd zgłoszenia.</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-kontakt" class="content-view">
+                    <div class="card-box" style="text-align: center;">
+                        <h3>Kontakt z Oazą Spokoju</h3>
+                        <p>Masz pytania? Zadzwoń lub napisz bezpośrednio na WhatsAppie.</p>
+                        <div style="font-size: 24px; font-weight: bold; color: #1b3b2b; margin: 15px 0;">📞 513 557 522</div>
+                        <a href="https://wa.me/48513557522" class="whatsapp-btn" target="_blank">Napisz na WhatsAppie</a>
+                        <p style="margin-top: 15px; font-size: 11px; color: #666;">Dokładny adres podaję po wstępnej weryfikacji.</p>
+                    </div>
+                </div>
+
+                <div id="view-admin-login" class="content-view">
+                    <div class="card-box">
+                        <h3>Panel Administratora</h3>
+                        <div id="adminAuthSection">
+                            <p style="font-size: 11px; margin-bottom: 10px; color: #555;">Wpisz hasło dostępu do panelu zarządzania rezerwacjami:</p>
+                            <div class="form-group">
+                                <label>Hasło:</label>
+                                <input type="password" id="adminPasswordInput" placeholder="Wprowadź hasło...">
+                            </div>
+                            <button type="button" class="btn-submit" onclick="checkAdminPassword()">ZALOGUJ SIĘ</button>
+                            <p id="loginErrorMsg" style="color: red; font-size: 10px; margin-top: 5px; display: none;">Błędne hasło! (Domyślne hasło to: admin123)</p>
+                        </div>
+
+                        <div id="adminPanelDashboard" style="display: none;">
+                            <p style="font-size: 12px; font-weight: bold; color: #2b4d36; margin-bottom: 10px;">Witaj w panelu zarządzania! Zarejestrowane zgłoszenia:</p>
+                            <div style="overflow-x: auto;">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Klient</th>
+                                            <th>Telefon</th>
+                                            <th>Zwierzak</th>
+                                            <th>Usługa</th>
+                                            <th>Kwota</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminBookingsList">
+                                        <tr>
+                                            <td colspan="6" style="text-align: center; color: #777;">Brak nowych zgłoszeń w pamięci sesji.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn-submit" style="background: #a94442; margin-top: 15px;" onclick="logoutAdmin()">WYLOGUJ SIĘ</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchView(viewName) {
+            const views = document.querySelectorAll('.content-view');
+            views.forEach(v => v.classList.remove('active'));
+            const target = document.getElementById('view-' + viewName);
+            if (target) {
+                target.classList.add('active');
+            }
+        }
+
+        function openMedia(type) {
+            const viewer = document.getElementById('mediaViewer');
+            const title = document.getElementById('viewerTitle');
+            const content = document.getElementById('viewerContent');
+            
+            viewer.classList.add('active');
+
+            if (type === 'wideo') {
+                title.textContent = "🎥 Filmik z Roxi";
+                content.innerHTML = `<video controls autoplay style="width: 100%; height: 100%; object-fit: contain; border-radius: 6px;">
+                                        <source src="Roxi.mp4" type="video/mp4">
+                                        Twoja przeglądarka nie obsługuje wideo.
+                                   </video>`;
+            } else if (type === 'kolaż') {
+                title.textContent = "📸 Galeria zdjęć";
+                content.innerHTML = `<div style="padding: 10px; font-size: 11px; color: #fff; text-align: center;">
+                                        Galeria zdjęć z pobytu zwierząt w Oazie Spokoju.
+                                   </div>`;
+            }
+        }
+
+        function closeMedia() {
+            const viewer = document.getElementById('mediaViewer');
+            viewer.classList.remove('active');
+            const content = document.getElementById('viewerContent');
+            content.innerHTML = ''; // Zatrzymuje odtwarzanie filmu po zamknięciu ramki
+        }
+
+        function capitalizeFirst(input) {
+            let val = input.value;
+            if (val.length > 0) {
+                input.value = val.charAt(0).toUpperCase() + val.slice(1);
+            }
+        }
+
+        function capitalizeWords(input) {
+            let words = input.value.split(' ');
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].length > 0) {
+                    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+                }
+            }
+            input.value = words.join(' ');
+        }
+
+        function calculatePrice() {
+            const serviceVal = parseInt(document.getElementById('serviceSelect').value);
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const resultSpan = document.getElementById('totalPriceResult');
+            const serviceSelectEl = document.getElementById('serviceSelect');
+            const serviceText = serviceSelectEl.options[serviceSelectEl.selectedIndex].text;
+            
+            const distanceBox = document.getElementById('distanceBox');
+            const dateToContainer = document.getElementById('dateToContainer');
+
+            if (serviceText.includes('Spacer')) {
+                distanceBox.style.display = 'block';
+                dateToContainer.style.display = 'none';
+            } else if (serviceText.includes('Opieka dzienna') || serviceText.includes('Świetlica')) {
+                distanceBox.style.display = 'none';
+                dateToContainer.style.display = 'none';
+            } else {
+                distanceBox.style.display = 'none';
+                dateToContainer.style.display = 'block';
+            }
+
+            let extra = 0;
+            if (document.getElementById('extraDistance').checked && distanceBox.style.display === 'block') {
+                extra = 60;
+            }
+
+            if (!serviceText.includes('Opieka dzienna') && !serviceText.includes('Spacer') && dateFrom && dateTo) {
+                const start = new Date(dateFrom);
+                const end = new Date(dateTo);
+                const diffTime = end - start;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                if (diffDays > 0) {
+                    const total = (diffDays * serviceVal) + extra;
+                    resultSpan.textContent = total + " zł (" + diffDays + " dni)";
+                } else {
+                    resultSpan.textContent = "Data 'Do' musi być późniejsza niż 'Od'!";
+                }
+            } else if (serviceText.includes('Opieka dzienna') || serviceText.includes('Spacer')) {
+                let total = serviceVal + extra;
+                resultSpan.textContent = total + " zł";
+            } else {
+                resultSpan.textContent = "Wybierz terminy...";
+            }
+        }
+
+        let savedBookings = [];
+
+        function handleFormSubmit(event) {
+            const clientName = document.getElementById('clientName').value;
+            const clientPhone = document.getElementById('clientPhone').value;
+            const dogName = document.getElementById('dogName').value;
+            const dogBreed = document.getElementById('dogBreed').value;
+            const serviceSelectEl = document.getElementById('serviceSelect');
+            const serviceText = serviceSelectEl.options[serviceSelectEl.selectedIndex].text;
+            const totalPrice = document.getElementById('totalPriceResult').textContent;
+
+            savedBookings.push({
+                date: new Date().toLocaleDateString('pl-PL'),
+                client: clientName,
+                phone: clientPhone,
+                pet: `${dogName} (${dogBreed})`,
+                service: serviceText,
+                price: totalPrice
+            });
+
+            updateAdminTable();
+
+            document.getElementById('contractContent').innerHTML = `
+                <p><strong>Status:</strong> Zgłoszenie zostało przygotowane do wysłania.</p>
+                <p><strong>Klient:</strong> ${clientName}</p>
+                <p><strong>Telefon:</strong> ${clientPhone}</p>
+                <p><strong>Pupil:</strong> ${dogName} (${dogBreed})</p>
+                <p><strong>Wybrana usługa:</strong> ${serviceText}</p>
+                <p><strong>Szacowany koszt:</strong> ${totalPrice}</p>
+            `;
+        }
+
+        function checkAdminPassword() {
+            const pass = document.getElementById('adminPasswordInput').value;
+            const errorMsg = document.getElementById('loginErrorMsg');
+            if (pass === 'admin123') {
+                errorMsg.style.display = 'none';
+                document.getElementById('adminAuthSection').style.display = 'none';
+                document.getElementById('adminPanelDashboard').style.display = 'block';
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminAuthSection').style.display = 'block';
+            document.getElementById('adminPanelDashboard').style.display = 'none';
+        }
+
+        function updateAdminTable() {
+            const tbody = document.getElementById('adminBookingsList');
+            if (savedBookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #777;">Brak nowych zgłoszeń w pamięci sesji.</td></tr>`;
+                return;
+            }
+            let html = '';
+            savedBookings.forEach(b => {
+                html += `<tr>
+                    <td>${b.date}</td>
+                    <td>${b.client}</td>
+                    <td>${b.phone}</td>
+                    <td>${b.pet}</td>
+                    <td>${b.service}</td>
+                    <td><b>${b.price}</b></td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

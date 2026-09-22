@@ -1,0 +1,20 @@
+<!-- START: PANEL ADMINISTRATORA - CENNIK -->
+<div class="admin-pricing-box" style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h3>Edycja Cennika Usług (klik-klik)</h3>
+    <form id="price-edit-form" onsubmit="saveAdminPrices(event)">
+        <div style="margin-bottom: 10px;">
+            <label>Opieka dobowa (zł/doba):</label><br>
+            <input type="number" id="input-dobowa" style="padding: 5px; width: 200px;" required>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Opieka dzienna (zł):</label><br>
+            <input type="number" id="input-dzienna" style="padding: 5px; width: 200px;" required>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Spacer (zł):</label><br>
+            <input type="number" id="input-spacer" style="padding: 5px; width: 200px;" required>
+        </div>
+        <button type="submit" style="background: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Zapisz zmiany cen</button>
+    </form>
+</div>
+<!-- KONIEC: PANEL ADMINISTRATORA - CENNIK -->

@@ -1,0 +1,50 @@
+const defaultPrices = {
+    dobowa: 60,
+    dzienna: 40,
+    spacer: 30
+};
+
+function getPrices() {
+    return {
+        dobowa: parseFloat(localStorage.getItem('price_dobowa')) || defaultPrices.dobowa,
+        dzienna: parseFloat(localStorage.getItem('price_dzienna')) || defaultPrices.dzienna,
+        spacer: parseFloat(localStorage.getItem('price_spacer')) || defaultPrices.spacer
+    };
+}
+
+function saveAdminPrices(event) {
+    event.preventDefault();
+    
+    const dobowa = document.getElementById('input-dobowa').value;
+    const dzienna = document.getElementById('input-dzienna').value;
+    const spacer = document.getElementById('input-spacer').value;
+    
+    localStorage.setItem('price_dobowa', dobowa);
+    localStorage.setItem('price_dzienna', dzienna);
+    localStorage.setItem('price_spacer', spacer);
+    
+    alert('Ceny zostały pomyślnie zaktualizowane!');
+    applyPricesToCalculator();
+}
+
+function applyPricesToCalculator() {
+    const prices = getPrices();
+    
+    if(document.getElementById('input-dobowa')) {
+        document.getElementById('input-dobowa').value = prices.dobowa;
+        document.getElementById('input-dzienna').value = prices.dzienna;
+        document.getElementById('input-spacer').value = prices.spacer;
+    }
+    
+    const optionDobowa = document.getElementById('opt-dobowa');
+    const optionDzienna = document.getElementById('opt-dzienna');
+    const optionSpacer = document.getElementById('opt-spacer');
+    
+    if(optionDobowa) optionDobowa.setAttribute('data-price', prices.dobowa);
+    if(optionDzienna) optionDzienna.setAttribute('data-price', prices.dzienna);
+    if(optionSpacer) optionSpacer.setAttribute('data-price', prices.spacer);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    applyPricesToCalculator();
+});
