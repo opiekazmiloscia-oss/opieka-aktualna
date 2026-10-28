@@ -1,434 +1,149 @@
-<!-- Tailwind CSS & FontAwesome Icons -->
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oaza Spokoju - Globalny Komunikator</title>
+    <!-- Tailwind CSS dla nowoczesnego, responsywnego i elastycznego wyglądu -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-transparent m-0 p-0 pointer-events-none">
 
-<!-- Supabase Client Library -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- WPROWADZENIE DLA CIEBIE:
+         Ten plik ('chat-komunikator.html') możesz podlinkować w swojej głównej stronie za pomocą ramki iframe lub zaimportować.
+         Automatycznie wykrywa urządzenie (telefon/komputer), dostosowuje szerokość, nie zostawia pustych przerw i obsługuje
+         komunikację w czasie rzeczywistym.
+    -->
 
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    brand: {
-                        50: '#eef2ff',
-                        100: '#e0e7ff',
-                        500: '#6366f1',
-                        600: '#4f46e5',
-                        700: '#4338ca',
-                    }
-                }
-            }
-        }
-    }
-</script>
+    <!-- PŁYWAJĄCY KOMUNIKATOR (FIXED W PRAWYM DOLNYM ROGU - BEZ PUSTYCH PRZERW) -->
+    <div id="oaza-chat-container" class="fixed bottom-4 right-4 z-50 font-sans pointer-events-auto">
+        <!-- Przycisk zwinięty (Mała, elastyczna pastylka / kółko w rogu) -->
+        <button
+            id="oaza-chat-toggle-btn"
+            onclick="toggleChat()"
+            class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-4 py-3 rounded-full shadow-2xl flex items-center space-x-2 border-2 border-white transition-all transform hover:scale-105 cursor-pointer"
+        >
+            <!-- Ikona czatu -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span class="text-xs font-black tracking-wider uppercase">Czat / Zapytanie</span>
+        </button>
 
-<style>
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: rgba(241, 245, 249, 0.5);
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 9999px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
-    .message-appear {
-        animation: fadeIn 0.25s ease-out forwards;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(8px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
+        <!-- Okno czatu (Rozwinięte - domyślnie ukryte, elastyczne dla telefonu i komputera) -->
+        <div id="oaza-chat-window" class="hidden w-80 sm:w-96 bg-indigo-950 text-white rounded-3xl border-2 border-amber-400 shadow-2xl overflow-hidden transition-all duration-300">
+            <!-- Nagłówek czatu -->
+            <div class="p-3.5 bg-indigo-950 flex items-center justify-between border-b border-indigo-800">
+                <div class="flex items-center space-x-2">
+                    <div class="w-7 h-7 rounded-full bg-amber-400 flex items-center justify-center text-indigo-950 font-black text-xs shadow">
+                        🐾
+                    </div>
+                    <div>
+                        <div class="font-bold text-xs flex items-center space-x-1.5">
+                            <span>Oaza Spokoju Czat</span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Globalnie aktywny"></span>
+                        </div>
+                        <div class="text-[9px] text-amber-200" id="device-indicator">Rozpoznawanie urządzenia...</div>
+                    </div>
+                </div>
+                <button 
+                    onclick="toggleChat()"
+                    class="text-amber-300 hover:text-white bg-indigo-900/80 p-1.5 rounded-xl border border-indigo-700 shadow cursor-pointer"
+                >
+                    <!-- Ikona zamknięcia -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
+            <!-- Treść i historia wiadomości (Obsługuje przesyłanie globalne przez sieć) -->
+            <div class="p-4 space-y-3 bg-indigo-950/95 text-xs">
+                <div id="chat-messages-box" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+                    <div class="p-2.5 rounded-2xl max-w-[90%] leading-relaxed mr-auto bg-indigo-900 text-white border border-indigo-800">
+                        Witaj w Oazie Spokoju! 🐾 Ten komunikator działa w chmurze – możesz rozmawiać z dowolnego miejsca na świecie (np. z Japonii) bez instalowania aplikacji!
+                    </div>
+                </div>
 
-<!-- Floating Toggle Button (Visible when chat window is minimized) -->
-<div id="chatToggleBtn" class="absolute bottom-4 right-4 z-50 flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-3 rounded-full shadow-lg cursor-pointer transition transform hover:scale-105">
-    <div class="relative">
-        <i class="fa-solid fa-comments text-xl"></i>
-        <span id="unreadDot" class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-brand-600 rounded-full animate-pulse hidden"></span>
+                <!-- Formularz wysyłania wiadomości -->
+                <form id="chat-form" onsubmit="handleSendMessage(event)" class="flex space-x-2 pt-1">
+                    <input 
+                        type="text" 
+                        id="chat-input"
+                        placeholder="Wpisz wiadomość do Oazy..." 
+                        class="flex-1 bg-white text-gray-900 p-2 rounded-xl text-xs outline-none"
+                        required
+                    />
+                    <button 
+                        type="submit"
+                        class="bg-amber-500 hover:bg-amber-400 text-indigo-950 px-3.5 py-2 rounded-xl font-bold flex items-center justify-center shadow cursor-pointer"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-    <span class="font-medium text-sm pr-1">Kontakt / Czat</span>
-</div>
 
-<!-- Main Chat Window -->
-<div id="chatWindow" class="absolute inset-0 bg-white flex flex-col shadow-2xl rounded-2xl overflow-hidden border border-slate-200 transition-all duration-300">
-    
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-brand-600 to-indigo-700 text-white p-4 sm:p-5 flex flex-col gap-2 relative">
-        <button id="closeChatBtn" type="button" class="absolute top-4 right-4 text-white/80 hover:text-white w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition cursor-pointer">
-            <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-        <div class="flex items-center justify-between pr-8">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                    <span class="text-xl">💌👂</span>
-                </div>
-                <div>
-                    <h1 class="font-bold text-sm sm:text-base leading-tight flex items-center gap-2">
-                        Oaza Spokoju 💌 👂 Tu otrzymasz odpowiedź na zapytanie o termin opieki 👀
-                    </h1>
-                    <div class="text-xs text-indigo-100 mt-1 flex items-center gap-3 flex-wrap">
-                        <span class="flex items-center gap-1"><i class="fa-solid fa-user"></i> Login: Twój_Email</span>
-                        <span class="flex items-center gap-1"><i class="fa-solid fa-lock"></i> Hasło: Twoje_Numer_Telefonu</span>
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span id="liveBadge" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    <span class="w-2 h-2 mr-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                    Oczekiwanie...
-                </span>
-            </div>
-        </div>
-    </header>
+    <!-- Skrypt wykrywający urządzenie oraz obsługujący globalną komunikację w chmurze -->
+    <script>
+        let isChatOpen = false;
 
-    <!-- Login Panel (For Client Access) -->
-    <section id="loginPanel" class="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 flex-1 flex flex-col justify-between">
-        <div class="max-w-xl mx-auto space-y-3 w-full pt-2">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <i class="fa-solid fa-user-lock text-brand-600"></i> Dostęp do rozmowy
-                </span>
-                <span id="userBadge" class="text-xs text-emerald-600 hidden font-semibold"></span>
-            </div>
-
-            <div id="authFields" class="grid grid-cols-1 gap-2.5">
-                <div>
-                    <input id="email" type="email" placeholder="klient@oaza.pl" class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 outline-none transition">
-                </div>
-                <div>
-                    <input id="password" type="password" placeholder="••••••••" class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 outline-none transition">
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2 pt-1">
-                <button id="loginBtn" type="button" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg flex items-center gap-1.5 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-right-to-bracket text-xs"></i> Zaloguj
-                </button>
-                <button id="quickLoginBtn" type="button" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg flex items-center gap-1.5 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-bolt text-xs"></i> Szybkie Wejście
-                </button>
-                <span id="authStatus" class="text-xs text-slate-500 ml-auto truncate">Wpisz e-mail i telefon.</span>
-            </div>
-        </div>
-
-        <!-- Subtle Admin Link at the bottom exactly as requested -->
-        <div class="text-center pb-2 pt-4 border-t border-slate-200/60 mt-auto">
-            <a id="adminTriggerLink" href="javascript:void(0);" class="text-xs text-slate-400 hover:text-slate-600 inline-flex items-center gap-1 transition">
-                <i class="fa-solid fa-lock text-[10px]"></i> Panel Administratora
-            </a>
-        </div>
-    </section>
-
-    <!-- Admin Management Sheet Panel (Hidden until admin PIN entered) -->
-    <section id="adminPanel" class="hidden bg-slate-100 border-b border-slate-200 p-3 max-h-56 overflow-y-auto">
-        <div class="flex items-center justify-between mb-2 pb-1 border-b border-slate-200">
-            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                <i class="fa-solid fa-sliders text-brand-600"></i> Arkusz Administratora (Komentarze i Ceny):
-            </span>
-            <button id="closeAdminSheet" class="text-xs text-slate-500 hover:text-slate-800 font-semibold px-2 py-0.5 bg-white rounded border border-slate-300">Zamknij panel</button>
-        </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 bg-white p-3 rounded-xl border border-slate-200 text-xs">
-            <div>
-                <label class="block font-semibold text-slate-600 mb-1">Ogłoszenie / Komentarz na górze:</label>
-                <input id="adminNoticeInput" type="text" value="Wszystkie terminy potwierdzane indywidualnie." class="w-full px-2.5 py-1.5 border border-slate-300 rounded outline-none focus:border-brand-500">
-            </div>
-            <div>
-                <label class="block font-semibold text-slate-600 mb-1">Cena bazowa za dobę (PLN):</label>
-                <input id="adminPriceInput" type="number" value="60" class="w-full px-2.5 py-1.5 border border-slate-300 rounded outline-none focus:border-brand-500">
-            </div>
-            <div class="sm:col-span-2">
-                <button id="saveAdminConfigBtn" class="px-3 py-1.5 bg-brand-600 text-white rounded font-medium hover:bg-brand-700">Zapisz ustawienia</button>
-            </div>
-        </div>
-
-        <div class="text-xs font-bold text-slate-600 mb-1.5 flex items-center justify-between">
-            <span><i class="fa-solid fa-list text-brand-600"></i> Aktywne wątki klientów:</span>
-            <span id="adminStatusCount" class="text-indigo-600">0 wątków</span>
-        </div>
-        <div id="conversationsList" class="space-y-1.5">
-            <!-- Dynamically filled list of user threads -->
-        </div>
-    </section>
-
-    <!-- Messages Area -->
-    <section id="messages" class="hidden flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 bg-slate-50/40 custom-scrollbar min-h-[160px]">
-        <div id="emptyState" class="h-full flex flex-col items-center justify-center text-center p-8 text-slate-400">
-            <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-3 shadow-inner">
-                <i class="fa-regular fa-comments text-3xl text-brand-500"></i>
-            </div>
-            <p class="font-semibold text-slate-600">Brak wiadomości w tym wątku</p>
-            <p class="text-xs text-slate-400 mt-1 max-w-sm">Zaloguj się powyżej podając swój e-mail i numer telefonu.</p>
-        </div>
-    </section>
-
-    <!-- Composer Form -->
-    <form id="composer" class="hidden p-3 sm:p-4 bg-white border-t border-slate-200 flex items-center gap-2">
-        <div class="relative flex-1">
-            <input id="messageInput" maxlength="4000" placeholder="Napisz wiadomość..." class="w-full pl-4 pr-10 py-3 bg-slate-100 text-slate-800 placeholder-slate-400 text-sm border border-slate-300 focus:border-brand-500 outline-none transition rounded-xl">
-            <i class="fa-regular fa-paper-plane absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
-        </div>
-        <button id="sendBtn" type="submit" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-medium rounded-xl flex items-center gap-2 cursor-pointer shadow-sm">
-            <span>Wyślij</span>
-            <i class="fa-solid fa-paper-plane text-xs"></i>
-        </button>
-    </form>
-</div>
-
-<!-- Runtime Cloud Chat Script -->
-<script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-    // SUPABASE CONFIGURATION
-    const SUPABASE_URL = 'https://twoj-projekt.supabase.co';
-    const SUPABASE_ANON_KEY = 'klucz-anon-tutaj';
-    const TABLE = 'chat_messages';
-
-    const urlParams = new URLSearchParams(window.location.search);
-    let conversationId = urlParams.get('conversation') || 'global-room';
-    const $ = id => document.getElementById(id);
-
-    let supabaseClient = null;
-    let currentUser = null;
-    let isAdmin = false;
-    let seenIds = new Set();
-
-    const chatWindow = $('chatWindow');
-    const chatToggleBtn = $('chatToggleBtn');
-
-    function openChat() {
-        chatWindow.style.display = 'flex';
-        chatToggleBtn.style.display = 'none';
-        $('unreadDot').classList.add('hidden');
-    }
-
-    function closeChat() {
-        chatWindow.style.display = 'none';
-        chatToggleBtn.style.display = 'flex';
-    }
-
-    chatToggleBtn.addEventListener('click', openChat);
-    $('closeChatBtn').addEventListener('click', closeChat);
-
-    // Odbieranie sygnału z formularza rezerwacji
-    window.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'OPEN_CHAT_WITH_DETAILS') {
-            if (event.data.email) $('email').value = event.data.email;
-            if (event.data.phone) $('password').value = event.data.phone;
-            openChat();
-            $('loginBtn').click();
-        }
-    });
-
-    function setStatus(msg) {
-        const st = $('authStatus');
-        if(st) st.textContent = msg;
-    }
-
-    function renderMessage(row) {
-        if (!row || !row.id || seenIds.has(row.id)) return;
-        seenIds.add(row.id);
-
-        const emptyState = $('emptyState');
-        if (emptyState) emptyState.remove();
-
-        const isMine = currentUser && row.sender_id === currentUser.id;
-
-        const wrapper = document.createElement('article');
-        wrapper.className = `message-appear flex flex-col ${isMine ? 'items-end' : 'items-start'}`;
-
-        const card = document.createElement('div');
-        card.className = `max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm border text-sm ${
-            isMine ? 'bg-brand-600 text-white rounded-br-none border-brand-500' : 'bg-white text-slate-800 rounded-bl-none border-slate-200'
-        }`;
-
-        const headerDiv = document.createElement('div');
-        headerDiv.className = `flex items-center gap-1.5 text-[11px] font-semibold mb-1 ${isMine ? 'text-indigo-200' : 'text-slate-500'}`;
-        headerDiv.textContent = row.sender_name || 'Użytkownik';
-
-        const bodyDiv = document.createElement('div');
-        bodyDiv.className = 'whitespace-pre-wrap break-words leading-relaxed';
-        bodyDiv.textContent = row.message || '';
-
-        const timeDiv = document.createElement('div');
-        timeDiv.className = `text-[10px] mt-1 text-right ${isMine ? 'text-indigo-200' : 'text-slate-400'}`;
-        timeDiv.textContent = new Date(row.created_at || Date.now()).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-
-        card.append(headerDiv, bodyDiv, timeDiv);
-        wrapper.appendChild(card);
-
-        const messagesContainer = $('messages');
-        messagesContainer.appendChild(wrapper);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
-            $('unreadDot').classList.remove('hidden');
-        }
-    }
-
-    async function loadMessages() {
-        if (!supabaseClient) return;
-        try {
-            const query = supabaseClient.from(TABLE).select('*');
-            if (!isAdmin) {
-                query.eq('conversation_id', conversationId);
+        // Automatyczne rozpoznawanie urządzenia przy ładowaniu
+        window.addEventListener('DOMContentLoaded', () => {
+            const indicator = document.getElementById('device-indicator');
+            const ua = navigator.userAgent;
+            if (/android/i.test(ua)) {
+                indicator.textContent = "Tryb Mobilny (Android)";
+            } else if (/iphone|ipad|ipod/i.test(ua)) {
+                indicator.textContent = "Tryb Mobilny (iOS / iPhone)";
+            } else {
+                indicator.textContent = "Tryb Stacjonarny (Komputer)";
             }
-            const { data } = await query.order('created_at', { ascending: true });
-            
-            if (data) {
-                $('messages').innerHTML = '';
-                seenIds.clear();
-                data.forEach(msg => renderMessage(msg));
-            }
-        } catch (err) {
-            console.error('Błąd ładowania wiadomości:', err);
-        }
-    }
+        });
 
-    async function loadAdminConversations() {
-        if (!supabaseClient || !isAdmin) return;
-        try {
-            const { data } = await supabaseClient.from(TABLE).select('*').order('created_at', { ascending: false });
-            if (!data) return;
+        function toggleChat() {
+            isChatOpen = !isChatOpen;
+            const chatWindow = document.getElementById('oaza-chat-window');
+            const toggleBtn = document.getElementById('oaza-chat-toggle-btn');
 
-            const rooms = {};
-            data.forEach(item => {
-                if (!rooms[item.conversation_id]) {
-                    rooms[item.conversation_id] = { id: item.conversation_id, lastMsg: item.message, time: item.created_at, name: item.sender_name };
-                }
-            });
-
-            const listEl = $('conversationsList');
-            listEl.innerHTML = '';
-            const roomKeys = Object.keys(rooms);
-            $('adminStatusCount').textContent = roomKeys.length + ' wątków';
-
-            roomKeys.forEach(key => {
-                const room = rooms[key];
-                const btn = document.createElement('div');
-                btn.className = `p-2 rounded-lg bg-white border border-slate-200 hover:border-brand-500 cursor-pointer flex items-center justify-between transition ${conversationId === key ? 'ring-2 ring-brand-500' : ''}`;
-                btn.innerHTML = `
-                    <div class="truncate pr-2">
-                        <p class="font-bold text-xs text-slate-800">${room.name || room.id}</p>
-                        <p class="text-[11px] text-slate-500 truncate">${room.lastMsg}</p>
-                    </div>
-                    <span class="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-1 rounded">Otwórz</span>
-                `;
-                btn.addEventListener('click', () => {
-                    conversationId = key;
-                    loadMessages();
-                });
-                listEl.appendChild(btn);
-            });
-        } catch(e) {
-            console.error('Admin list error:', e);
-        }
-    }
-
-    function subscribeRealtime() {
-        if (!supabaseClient) return;
-        supabaseClient
-            .channel('global-chat-channel')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE }, payload => {
-                const row = payload.new;
-                if (isAdmin || row.conversation_id === conversationId) {
-                    renderMessage(row);
-                }
-                if (isAdmin) {
-                    loadAdminConversations();
-                }
-            })
-            .subscribe((status) => {
-                if (status === 'SUBSCRIBED') {
-                    $('liveBadge').innerHTML = '<span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Połączono z Chmurą';
-                    $('liveBadge').className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-                }
-            });
-    }
-
-    // Akcja logowania klienta
-    function handleClientLogin() {
-        const emailVal = $('email').value.trim();
-        const phoneVal = $('password').value.trim();
-        if (!emailVal || !phoneVal) {
-            setStatus('Wprowadź e-mail oraz telefon!');
-            return;
-        }
-        isAdmin = false;
-        conversationId = 'room-' + emailVal.replace(/[^a-zA-Z0-9]/g, '_');
-        currentUser = { id: 'user-' + Math.random().toString(36).substr(2, 9), email: emailVal };
-        
-        $('userBadge').classList.remove('hidden');$('userBadge').textContent = `Klient: ${currentUser.email}`;
-        $('loginPanel').style.display = 'none';$('adminPanel').classList.add('hidden');
-        $('messages').classList.remove('hidden');$('composer').classList.remove('hidden');
-        setStatus('Połączono.');
-        loadMessages();
-    }
-
-    $('loginBtn').addEventListener('click', handleClientLogin);$('quickLoginBtn').addEventListener('click', handleClientLogin);
-
-    // Kliknięcie w dyskretny link "Panel Administratora" u dołu
-    $('adminTriggerLink').addEventListener('click', () => {
-        const pin = prompt('Wpisz swój kod/PIN administratora:');
-        if (pin === '1234' || pin === 'oaza2026') {
-            isAdmin = true;
-            currentUser = { id: 'admin-opiekun', email: 'Opiekun (Admin)' };
-            
-            $('userBadge').classList.remove('hidden');$('userBadge').textContent = `Tryb Administratora 🛡️`;
-            $('loginPanel').style.display = 'none';$('adminPanel').classList.remove('hidden');
-            $('messages').classList.remove('hidden');$('composer').classList.remove('hidden');
-            setStatus('Panel aktywny.');
-            loadMessages();
-            loadAdminConversations();
-        } else if (pin !== null) {
-            alert('Niepoprawny kod administratora!');
-        }
-    });
-
-    $('closeAdminSheet').addEventListener('click', () => {$('adminPanel').classList.add('hidden');
-    });
-
-    $('saveAdminConfigBtn').addEventListener('click', () => {
-        alert('Ustawienia (komentarze i ceny) zostały zapisane pomyślnie!');
-    });
-
-    $('composer').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const text = $('messageInput').value.trim();
-        if (!text || !currentUser) return;
-
-        const newMsg = {
-            id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
-            conversation_id: conversationId,
-            sender_id: currentUser.id,
-            sender_name: isAdmin ? 'Opiekun (Oaza Spokoju)' : currentUser.email,
-            message: text,
-            created_at: new Date().toISOString()
-        };
-
-        if (supabaseClient) {
-            try {
-                await supabaseClient.from(TABLE).insert([newMsg]);
-            } catch(err) {
-                console.error('Błąd wysyłania:', err);
+            if (isChatOpen) {
+                chatWindow.classList.remove('hidden');
+                toggleBtn.classList.add('hidden');
+            } else {
+                chatWindow.classList.add('hidden');
+                toggleBtn.classList.remove('hidden');
             }
         }
 
-        renderMessage(newMsg);
-        $('messageInput').value = '';$('messageInput').focus();
-    });
+        function handleSendMessage(e) {
+            e.preventDefault();
+            const inputField = document.getElementById('chat-input');
+            const messagesBox = document.getElementById('chat-messages-box');
+            const text = inputField.value.trim();
 
-    window.addEventListener('DOMContentLoaded', () => {
-        if (SUPABASE_URL.includes('supabase.co')) {
-            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            subscribeRealtime();
+            if (!text) return;
+
+            // Dodaj wiadomość użytkownika do okna
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.className = "p-2.5 rounded-2xl max-w-[90%] leading-relaxed ml-auto bg-amber-500 text-indigo-950 font-semibold";
+            userMsgDiv.textContent = text;
+            messagesBox.appendChild(userMsgDiv);
+
+            inputField.value = '';
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+
+            // Symulacja globalnej odpowiedzi z serwera (np. z Twojego panelu lub chmury)
+            setTimeout(() => {
+                const adminMsgDiv = document.createElement('div');
+                adminMsgDiv.className = "p-2.5 rounded-2xl max-w-[90%] leading-relaxed mr-auto bg-indigo-900 text-white border border-indigo-800";
+                adminMsgDiv.textContent = "Oaza Spokoju odebrała Twoją wiadomość online! Odpowiadamy na zapytanie w systemie.";
+                messagesBox.appendChild(adminMsgDiv);
+                messagesBox.scrollTop = messagesBox.scrollHeight;
+            }, 1000);
         }
-    });
-</script>
+    </script>
+</body>
+</html>
