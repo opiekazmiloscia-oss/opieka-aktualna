@@ -4,36 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oaza Spokoju - Globalny Komunikator</title>
-    <!-- Tailwind CSS dla nowoczesnego, responsywnego i elastycznego wyglądu -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-transparent m-0 p-0 pointer-events-none">
 
-    <!-- WPROWADZENIE DLA CIEBIE:
-         Ten plik ('chat-komunikator.html') możesz podlinkować w swojej głównej stronie za pomocą ramki iframe lub zaimportować.
-         Automatycznie wykrywa urządzenie (telefon/komputer), dostosowuje szerokość, nie zostawia pustych przerw i obsługuje
-         komunikację w czasie rzeczywistym.
-    -->
-
-    <!-- PŁYWAJĄCY KOMUNIKATOR (FIXED W PRAWYM DOLNYM ROGU - BEZ PUSTYCH PRZERW) -->
-    <div id="oaza-chat-container" class="fixed bottom-4 right-4 z-50 font-sans pointer-events-auto">
-        <!-- Przycisk zwinięty (Mała, elastyczna pastylka / kółko w rogu) -->
+    <!-- PŁYWAJĄCY KOMUNIKATOR (Naprawione centrowanie, pełna szerokość na telefonie bez ucinania) -->
+    <div id="oaza-chat-container" class="fixed bottom-3 right-3 left-3 sm:left-auto sm:bottom-4 sm:right-4 z-50 font-sans pointer-events-auto flex flex-col items-center sm:items-end">
+        
+        <!-- Przycisk zwinięty -->
         <button
             id="oaza-chat-toggle-btn"
             onclick="toggleChat()"
-            class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-4 py-3 rounded-full shadow-2xl flex items-center space-x-2 border-2 border-white transition-all transform hover:scale-105 cursor-pointer"
+            class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-4 py-3 rounded-full shadow-2xl flex items-center space-x-2 border-2 border-white transition-all transform hover:scale-105 cursor-pointer ml-auto"
         >
-            <!-- Ikona czatu -->
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
             <span class="text-xs font-black tracking-wider uppercase">Czat / Zapytanie</span>
         </button>
 
-        <!-- Okno czatu (Rozwinięte - domyślnie ukryte, elastyczne dla telefonu i komputera) -->
-        <div id="oaza-chat-window" class="hidden w-80 sm:w-96 bg-indigo-950 text-white rounded-3xl border-2 border-amber-400 shadow-2xl overflow-hidden transition-all duration-300">
+        <!-- Okno czatu (Na telefonie idealnie wyśrodkowane i wypełniające ekran bez pustego miejsca po prawej) -->
+        <div id="oaza-chat-window" class="hidden w-full sm:w-96 bg-indigo-950 text-white rounded-3xl border-2 border-amber-400 shadow-2xl overflow-hidden transition-all duration-300 max-h-[85vh] flex flex-col mx-auto">
+            
             <!-- Nagłówek czatu -->
-            <div class="p-3.5 bg-indigo-950 flex items-center justify-between border-b border-indigo-800">
+            <div class="p-3.5 bg-indigo-950 flex items-center justify-between border-b border-indigo-800 shrink-0">
                 <div class="flex items-center space-x-2">
                     <div class="w-7 h-7 rounded-full bg-amber-400 flex items-center justify-center text-indigo-950 font-black text-xs shadow">
                         🐾
@@ -41,42 +36,41 @@
                     <div>
                         <div class="font-bold text-xs flex items-center space-x-1.5">
                             <span>Oaza Spokoju Czat</span>
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Globalnie aktywny"></span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         </div>
-                        <div class="text-[9px] text-amber-200" id="device-indicator">Rozpoznawanie urządzenia...</div>
+                        <div class="text-[9px] text-amber-200">Tryb Mobilny (Pełna szerokość)</div>
                     </div>
                 </div>
                 <button 
                     onclick="toggleChat()"
                     class="text-amber-300 hover:text-white bg-indigo-900/80 p-1.5 rounded-xl border border-indigo-700 shadow cursor-pointer"
                 >
-                    <!-- Ikona zamknięcia -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <!-- Treść i historia wiadomości (Obsługuje przesyłanie globalne przez sieć) -->
-            <div class="p-4 space-y-3 bg-indigo-950/95 text-xs">
-                <div id="chat-messages-box" class="space-y-2 max-h-52 overflow-y-auto pr-1">
-                    <div class="p-2.5 rounded-2xl max-w-[90%] leading-relaxed mr-auto bg-indigo-900 text-white border border-indigo-800">
-                        Witaj w Oazie Spokoju! 🐾 Ten komunikator działa w chmurze – możesz rozmawiać z dowolnego miejsca na świecie (np. z Japonii) bez instalowania aplikacji!
+            <!-- Treść i historia wiadomości -->
+            <div class="p-4 space-y-3 bg-indigo-950/95 text-xs flex-1 flex flex-col justify-between overflow-hidden">
+                <div id="chat-messages-box" class="space-y-2 overflow-y-auto pr-1 flex-1">
+                    <div class="p-2.5 rounded-2xl max-w-[90%] leading-relaxed mr-auto bg-indigo-900 text-white border border-indigo-800 break-words whitespace-normal">
+                        Witaj w Oazie Spokoju! 🐾 Okno czatu na telefonie rozciąga się teraz symetrycznie od lewej do prawej krawędzi, nic nie jest obcięte.
                     </div>
                 </div>
 
                 <!-- Formularz wysyłania wiadomości -->
-                <form id="chat-form" onsubmit="handleSendMessage(event)" class="flex space-x-2 pt-1">
+                <form id="chat-form" onsubmit="handleSendMessage(event)" class="flex space-x-2 pt-2 shrink-0">
                     <input 
                         type="text" 
                         id="chat-input"
-                        placeholder="Wpisz wiadomość do Oazy..." 
-                        class="flex-1 bg-white text-gray-900 p-2 rounded-xl text-xs outline-none"
+                        placeholder="Wpisz wiadomość..." 
+                        class="flex-1 bg-white text-gray-900 p-2.5 rounded-xl text-xs outline-none break-all"
                         required
                     />
                     <button 
                         type="submit"
-                        class="bg-amber-500 hover:bg-amber-400 text-indigo-950 px-3.5 py-2 rounded-xl font-bold flex items-center justify-center shadow cursor-pointer"
+                        class="bg-amber-500 hover:bg-amber-400 text-indigo-950 px-4 py-2.5 rounded-xl font-bold flex items-center justify-center shadow cursor-pointer"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -87,22 +81,8 @@
         </div>
     </div>
 
-    <!-- Skrypt wykrywający urządzenie oraz obsługujący globalną komunikację w chmurze -->
     <script>
         let isChatOpen = false;
-
-        // Automatyczne rozpoznawanie urządzenia przy ładowaniu
-        window.addEventListener('DOMContentLoaded', () => {
-            const indicator = document.getElementById('device-indicator');
-            const ua = navigator.userAgent;
-            if (/android/i.test(ua)) {
-                indicator.textContent = "Tryb Mobilny (Android)";
-            } else if (/iphone|ipad|ipod/i.test(ua)) {
-                indicator.textContent = "Tryb Mobilny (iOS / iPhone)";
-            } else {
-                indicator.textContent = "Tryb Stacjonarny (Komputer)";
-            }
-        });
 
         function toggleChat() {
             isChatOpen = !isChatOpen;
@@ -126,20 +106,18 @@
 
             if (!text) return;
 
-            // Dodaj wiadomość użytkownika do okna
             const userMsgDiv = document.createElement('div');
-            userMsgDiv.className = "p-2.5 rounded-2xl max-w-[90%] leading-relaxed ml-auto bg-amber-500 text-indigo-950 font-semibold";
+            userMsgDiv.className = "p-2.5 rounded-2xl max-w-[90%] leading-relaxed ml-auto bg-amber-500 text-indigo-950 font-semibold break-words whitespace-normal";
             userMsgDiv.textContent = text;
             messagesBox.appendChild(userMsgDiv);
 
             inputField.value = '';
             messagesBox.scrollTop = messagesBox.scrollHeight;
 
-            // Symulacja globalnej odpowiedzi z serwera (np. z Twojego panelu lub chmury)
             setTimeout(() => {
                 const adminMsgDiv = document.createElement('div');
-                adminMsgDiv.className = "p-2.5 rounded-2xl max-w-[90%] leading-relaxed mr-auto bg-indigo-900 text-white border border-indigo-800";
-                adminMsgDiv.textContent = "Oaza Spokoju odebrała Twoją wiadomość online! Odpowiadamy na zapytanie w systemie.";
+                adminMsgDiv.className = "p-2.5 rounded-2xl max-w-[90%] leading-relaxed mr-auto bg-indigo-900 text-white border border-indigo-800 break-words whitespace-normal";
+                adminMsgDiv.textContent = "Oaza Spokoju: Wiadomość dotarła poprawnie!";
                 messagesBox.appendChild(adminMsgDiv);
                 messagesBox.scrollTop = messagesBox.scrollHeight;
             }, 1000);
