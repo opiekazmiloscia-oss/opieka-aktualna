@@ -298,8 +298,18 @@
                                     Administratorem danych jest domowa opieka „Oaza Spokoju”. Podanie danych jest dobrowolne, ale niezbędne do realizacji rezerwacji.
                                 </div>
                             </div>
-
-                            <button type="submit" class="btn-submit">WYŚLIJ ZAPYTANIE</button>
+                              <script>
+    function sendToWhatsApp(event) {
+        event.preventDefault();
+        const name = document.getElementById('f-name')?.value || 'Klient';
+        const phone = document.getElementById('f-phone')?.value || 'Brak telefonu';
+        const total = document.getElementById('calc-total')?.textContent || '240 PLN';
+        const text = `Nowe zapytanie od: ${name}, tel: ${phone}, kwota do zapłaty: ${total}`;
+        const url = `https://wa.me/48513557522?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    }
+</script>
+                           <button type="button" class="btn-submit" onclick="sendToWhatsApp(event)">💌WYŚLIJ ZAPYTANIE</button>
                         </form>
                     </div>
                 </div>
